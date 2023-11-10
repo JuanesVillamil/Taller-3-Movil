@@ -9,22 +9,23 @@
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="20dp"
         android:text="Create a new User"
 
         android:textColor="@color/blue_green"
         android:textSize="20sp"
         android:textStyle="bold"
 
+        app:layout_constraintBottom_toTopOf="@+id/textView12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editTextTextEmailAddress2"
-        android:layout_width="331dp"
+        android:layout_width="330dp"
         android:layout_height="43dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="8dp"
         android:ems="10"
 
         android:hint="Write your email"
@@ -32,11 +33,12 @@
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toTopOf="@+id/textView13"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/editTextTextPassword2"
-        android:layout_width="327dp"
+        android:layout_width="330dp"
         android:layout_height="44dp"
         android:layout_marginBottom="16dp"
         android:ems="10"
@@ -46,14 +48,14 @@
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/textView14"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintHorizontal_bias="0.518"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/editTextText"
-        android:layout_width="148dp"
+        android:layout_width="150dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="28dp"
         android:ems="10"
         android:hint="First name"
 
@@ -61,19 +63,19 @@
 
         app:layout_constraintBottom_toTopOf="@+id/textView16"
         app:layout_constraintEnd_toStartOf="@+id/editTextText2"
-        app:layout_constraintHorizontal_bias="0.547"
+        app:layout_constraintHorizontal_bias="0.518"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/editTextText2"
-        android:layout_width="159dp"
+        android:layout_width="150dp"
         android:layout_height="49dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="28dp"
         android:ems="10"
-        android:inputType="text"
-
         android:hint="Last name"
+
+        android:inputType="text"
 
         app:layout_constraintBottom_toTopOf="@+id/textView16"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -94,9 +96,9 @@
 
     <EditText
         android:id="@+id/editTextNumber"
-        android:layout_width="337dp"
+        android:layout_width="330dp"
         android:layout_height="45dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="44dp"
         android:ems="10"
         android:hint="Write your ID"
 
@@ -104,7 +106,7 @@
 
         app:layout_constraintBottom_toTopOf="@+id/textView17"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.54"
+        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
@@ -125,17 +127,18 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="72dp"
         android:text="Create"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="24dp"
         android:clickable="true"
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -155,9 +158,7 @@
         app:layout_constraintBottom_toTopOf="@+id/editTextTextEmailAddress2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.107"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView10"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView13"
@@ -206,24 +207,28 @@
         android:id="@+id/textView16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ID (number)"
+        android:layout_marginBottom="4dp"
 
-        android:textStyle="bold"
+        android:text="ID (number)"
         android:textColor="@color/red"
 
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/editTextNumber"
-        tools:layout_editor_absoluteX="41dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.125"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
+
+
         android:text="Latitude"
-
         android:textColor="@color/red"
-        android:textStyle="bold"
 
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/editTextNumberDecimalLatitude"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -231,22 +236,22 @@
         android:id="@+id/textView18"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+
         android:text="Longitude"
-
         android:textColor="@color/red"
-        android:textStyle="bold"
 
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/editTextNumberDecimalLongitude"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toEndOf="@+id/textView17" />
 
     <TextView
         android:id="@+id/textView19"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="28dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="20dp"
         android:text="Load Image:"
         app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
         app:layout_constraintTop_toBottomOf="@+id/editTextNumberDecimalLatitude" />

@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.taller3_firebase"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.taller3_firebase"
@@ -54,7 +54,6 @@ dependencies {
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
-    implementation ("com.firebaseui:firebase-ui-auth")
     implementation ("com.google.firebase:firebase-auth")
     implementation ("com.google.firebase:firebase-database")
 
