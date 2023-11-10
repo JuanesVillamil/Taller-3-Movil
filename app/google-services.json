@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "246330738852",
+    "project_id": "taller-3-firebase-compu-movil",
+    "storage_bucket": "taller-3-firebase-compu-movil.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246330738852:android:4ebe31c73d274f9dc77e31",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByaxT6P1ED2rLEskdZwkBpbTfEHqnpl94"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
