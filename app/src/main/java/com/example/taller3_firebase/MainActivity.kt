@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         binding.loginButton.setOnClickListener{
-            val validForm = validateForm()
+            val validForm = validateLoginForm()
 
             if (validForm){
                 val intent = Intent(baseContext, MenuActivity::class.java)
@@ -76,34 +76,57 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun validateForm():Boolean{
-        var validEmail: Boolean
-        var validPassword: Boolean
+    fun validateLoginForm():Boolean{
+        var validEmail: Boolean = true
+        var validPassword: Boolean = true
+        var validForm: Boolean = true
 
         // Check email
         val emailString = binding.editTextTextEmailAddress.toString()
-        // First check if its empty.
-        if (TextUtils.isEmpty(emailString)){
-            binding.editTextTextEmailAddress.error = "Required"
-            validEmail = false
-        } else { // Then check if its a valid pattern.
-            validEmail = validateEmail(emailString)
-        }
-
+        validEmail = validateEmail(emailString)
 
 
         // Check password
         val passwordString = binding.editTextTextPassword.toString()
-        if (TextUtils.isEmpty(passwordString)){
-            binding.editTextTextPassword.error = "Required"
-            validPassword = false
+        validPassword = validatePassword(passwordString)
+
+        if (!validPassword || !validEmail){
+            validForm = false
+            return validForm
         }
 
-        return false
+        return validForm
     }
 
     fun validateEmail(email: String): Boolean{
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        var validEmail: Boolean = true
+
+        // First check if its empty.
+        if (TextUtils.isEmpty(email)){
+            binding.editTextTextEmailAddress.error = "Required"
+            validEmail = false
+        } else { // Then check if its a valid pattern.
+
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                binding.editTextTextEmailAddress.error = "Invalid"
+                validEmail = false
+            }
+        }
+
+        return validEmail
+    }
+
+    fun validatePassword(password: String): Boolean{
+
+        var validPassword: Boolean = true
+
+        if (TextUtils.isEmpty(password)){
+            binding.editTextTextPassword.error = "Required"
+            validPassword = false
+            return validPassword
+        }
+
+        return validPassword
     }
 
 
