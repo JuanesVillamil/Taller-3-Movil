@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/encabezado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set your profile photo"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/fotoPerfilPersona"/>
+
+    <ImageView
+        android:id="@+id/fotoPerfilPersona"
+        android:layout_width="349dp"
+        android:layout_height="366dp"
+        app:layout_constraintBottom_toTopOf="@id/alineacionBotones"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/encabezado"
+        android:src="@drawable/ic_launcher_foreground"
+
+        />
+    <LinearLayout
+
+        android:id="@+id/alineacionBotones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/finishBtn"
+        app:layout_constraintTop_toBottomOf="@id/fotoPerfilPersona"
+        >
+        <Button
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:id="@+id/cambioFotoGaleriaButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Set photo from gallery"
+
+            android:backgroundTint="@color/blue_green"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fotoPerfilPersona"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+
+            />
+
+        <Button
+            android:id="@+id/cambioFotoCamaraButton"
+            android:layout_width="0dp"
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_height="match_parent"
+            android:text="Set photo from camera"
+
+            android:backgroundTint="@color/blue_green"
+
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:textSize="20sp"/>
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/finishBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finish account creation"
+        android:textSize="20sp"
+
+        android:backgroundTint="@color/red"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/alineacionBotones" />
+</androidx.constraintlayout.widget.ConstraintLayout>

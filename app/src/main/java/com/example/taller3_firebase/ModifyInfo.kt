@@ -7,35 +7,75 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.taller3_firebase.databinding.ModifyInfoBinding
 import com.example.taller3_firebase.databinding.SignInActivityBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
-import kotlin.math.log
 
-class SignInActivity : AppCompatActivity() {
+class ModifyInfo : AppCompatActivity() {
 
-    private lateinit var binding: SignInActivityBinding
+    lateinit var binding: ModifyInfoBinding
     private var auth: FirebaseAuth = Firebase.auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = SignInActivityBinding.inflate(layoutInflater)
+        binding = ModifyInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        auth = FirebaseAuth.getInstance()
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users")
+        val currentUser = auth.currentUser
 
         binding.createButton.setOnClickListener{
             if (validateCreationForm()){
-                signUpAndSaveUserInfo()
-                saveAdditionUserInfo()
-
-                val intent = Intent(baseContext, ImageUpload::class.java)
+                updateUserInfo()
+                val intent = Intent(baseContext, MenuActivity::class.java)
                 startActivity(intent)
             } else {
-                Toast.makeText(this@SignInActivity, String.format("Form is not valid. Try again."), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ModifyInfo, String.format("Form is not valid. Try again."), Toast.LENGTH_SHORT).show()
             }
+        }
+
+        if (currentUser != null) {
+            // Step 1: Search for the user with the same email in the database
+            databaseReference.orderByChild("email").equalTo(currentUser.email)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (userSnapshot in snapshot.children) {
+                            val userEmail = userSnapshot.child("email").getValue(String::class.java)
+                            val userFirstName = userSnapshot.child("firstName").getValue(String::class.java)
+                            val userLastName = userSnapshot.child("lastName").getValue(String::class.java)
+                            val userId = userSnapshot.child("id").getValue(String::class.java)
+                            val userLatitude = userSnapshot.child("latitude").getValue(String::class.java)
+                            val userLongitude = userSnapshot.child("longitude").getValue(String::class.java)
+
+                            binding.editTextTextEmailAddress2.setText(userEmail)
+                            binding.editTextFirstName.setText(userFirstName)
+                            binding.editTextLastName.setText(userLastName)
+                            binding.editTextID.setText(userId)
+                            binding.editTextNumberDecimalLatitude.setText(userLatitude)
+                            binding.editTextNumberDecimalLongitude.setText(userLongitude)
+
+                            // Disable the ID field
+                            binding.editTextID.isEnabled = false
+                            binding.editTextTextPassword2.isEnabled = false
+                            binding.editTextTextEmailAddress2.isEnabled = false
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle error
+                    }
+                })
+
+
         }
 
 
@@ -43,7 +83,7 @@ class SignInActivity : AppCompatActivity() {
 
     fun validateCreationForm():Boolean{
         var validEmail: Boolean = true
-        var validPassword: Boolean = true
+
         var validNames: Boolean = true
         var validId: Boolean = true
         var validLocationNumbers: Boolean = true
@@ -52,10 +92,6 @@ class SignInActivity : AppCompatActivity() {
         // Check email
         val emailString = binding.editTextTextEmailAddress2.text.toString()
         validEmail = validateEmail(emailString)
-
-        // Check password
-        val passwordString = binding.editTextTextPassword2.text.toString()
-        validPassword = validatePassword(passwordString)
 
         // Check names
         validNames = validateNames()
@@ -66,7 +102,7 @@ class SignInActivity : AppCompatActivity() {
         // Check location numbers
         validLocationNumbers = validateLocationNumbers()
 
-        if (!validPassword || !validEmail || !validNames || !validId || !validLocationNumbers){
+        if (!validEmail || !validNames || !validId || !validLocationNumbers){
             validForm = false
             return validForm
         }
@@ -157,31 +193,8 @@ class SignInActivity : AppCompatActivity() {
         return true
     }
 
-    fun signUpAndSaveUserInfo() {
-        val emailString = binding.editTextTextEmailAddress2.text.toString()
-        val passwordString = binding.editTextTextPassword2.text.toString()
 
-        auth.createUserWithEmailAndPassword(emailString, passwordString)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val user = auth.currentUser
-
-                    Toast.makeText(
-                        this@SignInActivity,
-                        "User ${user?.email} was successfully created.",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    // Now that the user is created, save additional user info
-
-                }
-            }
-            .addOnFailureListener(this) { e ->
-                Toast.makeText(this@SignInActivity, e.message, Toast.LENGTH_LONG).show()
-            }
-    }
-
-    fun saveAdditionUserInfo(){
+    fun updateUserInfo(){
 
         val database = Firebase.database
         val userDefinedId = (binding.editTextID.text.toString())
@@ -196,5 +209,4 @@ class SignInActivity : AppCompatActivity() {
         reference.child("state").setValue("No disponible")
 
     }
-
 }

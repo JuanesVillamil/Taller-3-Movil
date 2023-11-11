@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
 
         // If there is, launch the menu activity.
-        if (currentUser != null){
-            val intent = Intent(baseContext, MainActivity::class.java)
+        if (currentUser != null) {
+            val intent = Intent(baseContext, MenuActivity::class.java)
             intent.putExtra("currentUser", currentUser.email)
             startActivity(intent)
         }
@@ -73,6 +73,24 @@ class MainActivity : AppCompatActivity() {
         binding.editTextTextEmailAddress.setText("")
         binding.editTextTextPassword.setText("")
 
+        binding.loginButton.setOnClickListener {
+            val email = binding.editTextTextEmailAddress.text.toString()
+            val password = binding.editTextTextPassword.text.toString()
+
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        val intent = Intent(baseContext, MenuActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+
+
+        }
     }
 
 
@@ -82,12 +100,12 @@ class MainActivity : AppCompatActivity() {
         var validForm: Boolean = true
 
         // Check email
-        val emailString = binding.editTextTextEmailAddress.toString()
+        val emailString = binding.editTextTextEmailAddress.text.toString()
         validEmail = validateEmail(emailString)
 
 
         // Check password
-        val passwordString = binding.editTextTextPassword.toString()
+        val passwordString = binding.editTextTextPassword.text.toString()
         validPassword = validatePassword(passwordString)
 
         if (!validPassword || !validEmail){
@@ -132,35 +150,4 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    /*
-
-    loginButton.setOnClickListener {
-        val email = emailEditText.text.toString()
-        val password = passwordEditText.text.toString()
-
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    // TODO: Update UI or navigate to the next screen
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-
-
-    }
-     */
-
-
-    /*
-    private fun saveUserToDatabase(userId: String, firstName: String, lastName: String, idNumber: String, imageUrl: String, latitude: Double, longitude: Double) {
-        val userReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId)
-        val newUser = User(firstName, lastName, idNumber, imageUrl, latitude, longitude)
-        userReference.setValue(newUser)
-    }
-
-     */
 }
