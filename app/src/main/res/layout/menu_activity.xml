@@ -56,15 +56,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
-    <LinearLayout
-        android:layout_width="409dp"
-        android:layout_height="548dp"
-        android:layout_marginTop="28dp"
-        android:orientation="vertical"
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="552dp"
+        android:layout_height="698dp"
+        android:layout_marginBottom="4dp"
+        android:background="#BC636363"
+        android:verticalScrollbarPosition="right"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"></LinearLayout>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView3"
@@ -109,8 +110,8 @@
 
     <Switch
         android:id="@+id/switch1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="28dp"
         android:text="State"

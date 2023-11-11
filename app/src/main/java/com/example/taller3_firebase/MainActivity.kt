@@ -44,6 +44,15 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(baseContext, SignInActivity::class.java)
             startActivity(intent)
         }
+
+        binding.mapa.setOnClickListener {
+            val intent = Intent(applicationContext, MapsActivity::class.java)
+            startActivity(intent)
+        }
+        binding.prueba.setOnClickListener {
+            val intent = Intent(applicationContext, MenuActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 
@@ -96,6 +105,7 @@ class MainActivity : AppCompatActivity() {
     fun validateEmail(email: String): Boolean{
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
+
 
 
 
