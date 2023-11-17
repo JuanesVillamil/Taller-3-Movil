@@ -19,7 +19,10 @@ import androidx.core.content.FileProvider
 import com.example.taller3_firebase.databinding.ImageUploadBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.integrity.IntegrityTokenRequest
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.io.IOException
@@ -27,48 +30,51 @@ import java.text.DateFormat
 import java.util.Date
 import java.util.logging.Logger
 
-class ImageUpload : AppCompatActivity(){
+class ImageUpload : AppCompatActivity() {
     private lateinit var binding: ImageUploadBinding
+    private var auth: FirebaseAuth = Firebase.auth
 
     companion object {
         val TAG: String = ImageUpload::class.java.name
     }
+
     private val logger = Logger.getLogger(TAG)
 
-    // Permission handler
     private val getSimplePermission = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) {
+        ActivityResultContracts.RequestPermission()
+    ) {
         updateUI(it)
     }
-
 
     var pictureImagePath: Uri? = null
     var imageViewContainer: ImageView? = null
 
-    // Create ActivityResultLauncher instances
     private val cameraActivityResultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) { result ->
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
-            // Handle camera result
             imageViewContainer!!.setImageURI(pictureImagePath)
             imageViewContainer!!.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
             logger.info("Image capture successfully.")
+
+            uploadPhoto(pictureImagePath!!)
         } else {
             logger.warning("Image capture failed.")
         }
     }
 
     private val galleryActivityResultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) { result ->
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
-            // Handle gallery result
             val imageUri: Uri? = result.data!!.data
             imageViewContainer!!.setImageURI(imageUri)
             imageViewContainer!!.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
             logger.info("Image loaded successfully")
+
+            imageUri?.let { uploadPhoto(it) }
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,39 +84,40 @@ class ImageUpload : AppCompatActivity(){
         imageViewContainer = binding.fotoPerfilPersona
 
         binding.cambioFotoCamaraButton.setOnClickListener {
-            verifyPermissions(this, android.Manifest.permission.CAMERA, "El permiso es requerido para...")
+            verifyPermissions(
+                this,
+                android.Manifest.permission.CAMERA,
+                "El permiso es requerido para..."
+            )
         }
 
-        binding.cambioFotoGaleriaButton.setOnClickListener{
+        binding.cambioFotoGaleriaButton.setOnClickListener {
             val pickGalleryImage = Intent(Intent.ACTION_PICK)
             pickGalleryImage.type = "image/*"
             galleryActivityResultLauncher.launch(pickGalleryImage)
         }
 
-        binding.finishBtn.setOnClickListener{
+        binding.finishBtn.setOnClickListener {
             val intent = Intent(baseContext, MenuActivity::class.java)
             startActivity(intent)
         }
-
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK) {
-            // Handle camera result
             imageViewContainer!!.setImageURI(pictureImagePath)
             imageViewContainer!!.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
             logger.info("Image capture successfully.")
             val selectedImageUri: Uri = data?.data!!
+
             uploadPhoto(selectedImageUri)
         } else {
             logger.warning("Image capture failed.")
         }
     }
 
-    // Verify permission to access contacts info
     private fun verifyPermissions(context: Context, permission: String, rationale: String) {
         when {
             ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED -> {
@@ -118,7 +125,6 @@ class ImageUpload : AppCompatActivity(){
                 updateUI(true)
             }
             shouldShowRequestPermissionRationale(permission) -> {
-                // We display a snackbar with the justification for the permission, and once it disappears, we request it again.
                 val snackbar = Snackbar.make(binding.root, rationale, Snackbar.LENGTH_LONG)
                 snackbar.addCallback(object : Snackbar.Callback() {
                     override fun onDismissed(snackbar: Snackbar, event: Int) {
@@ -135,20 +141,17 @@ class ImageUpload : AppCompatActivity(){
         }
     }
 
-    // Update activity behavior and actions according to result of permission request
-    fun updateUI(permission : Boolean) {
-        if(permission){
-            //granted
+    fun updateUI(permission: Boolean) {
+        if (permission) {
             logger.info("Permission granted")
             dipatchTakePictureIntent()
-        }else{
+        } else {
             logger.warning("Permission denied")
         }
     }
 
-    fun dipatchTakePictureIntent() {
+    private fun dipatchTakePictureIntent() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        // Crear el archivo donde debería ir la foto
         var imageFile: File? = null
         pictureImagePath = null
         imageViewContainer!!.setImageURI(null)
@@ -157,11 +160,13 @@ class ImageUpload : AppCompatActivity(){
         } catch (ex: IOException) {
             logger.warning(ex.message)
         }
-        // Continua si el archivo ha sido creado exitosamente
+
         if (imageFile != null) {
-            // Guardar un archivo: Ruta para usar con ACTION_VIEW intents
-            pictureImagePath = FileProvider
-                .getUriForFile(this,"com.example.taller3_firebase.fileprovider", imageFile)
+            pictureImagePath = FileProvider.getUriForFile(
+                this,
+                "com.example.taller3_firebase.fileprovider",
+                imageFile
+            )
             logger.info("Ruta: ${pictureImagePath}")
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, pictureImagePath)
             try {
@@ -172,36 +177,63 @@ class ImageUpload : AppCompatActivity(){
         }
     }
 
-
-    fun uploadPhoto(imageUri: Uri){
+    private fun uploadPhoto(imageUri: Uri) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         userId?.let {
             val storageReference =
-                FirebaseStorage.getInstance().getReference("profile_images/$it.jpg")
+                FirebaseStorage.getInstance().getReference("profile_images/$it/$it.jpg")
 
             storageReference.putFile(imageUri)
-                .addOnSuccessListener {
-                    // Image uploaded successfully
+                .addOnSuccessListener { taskSnapshot ->
 
-                    val imageUrl = it.metadata?.reference?.downloadUrl.toString()
+                    storageReference.downloadUrl.addOnSuccessListener { uri ->
+                        val imageUrl = uri.toString()
 
-                    // TODO: Update UI or perform other actions after successful image upload
+                        saveImageUrlInFirestore(imageUrl)
+                    }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Error getting image URL", Toast.LENGTH_SHORT).show()
+                        }
                 }
                 .addOnFailureListener {
-                    // Handle unsuccessful image upload
-                    // Display an error message to the user
                     Toast.makeText(this, "Image upload failed", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+
+
+    private fun saveImageUrlInFirestore(imageUrl: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        userId?.let {
+            val userDocument = hashMapOf(
+                "imageUrl" to imageUrl
+            )
+
+            FirebaseFirestore.getInstance().collection("usuarios")
+                .document(userId)
+                .update(userDocument as Map<String, Any>)
+                .addOnSuccessListener {
+                    Log.d("Firestore", "Image URL successfully written!")
+
+                    // Puedes agregar aquí el código para la transición a la siguiente actividad si es necesario
+                    val intent = Intent(baseContext, MenuActivity::class.java)
+                    startActivity(intent)
+                }
+                .addOnFailureListener { e ->
+                    Log.w("Firestore", "Error writing image URL", e)
                 }
         }
     }
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
-        //Crear un nombre de archivo de imagen
         val timeStamp: String = DateFormat.getDateInstance().format(Date())
         val imageFileName = "${timeStamp}.jpg"
-        val imageFile = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageFileName)
+        val imageFile = File(
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            imageFileName
+        )
         return imageFile
     }
-
 }

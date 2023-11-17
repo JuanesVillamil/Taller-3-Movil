@@ -19,8 +19,8 @@
         android:id="@+id/modifyInfoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="160dp"
+        android:layout_marginTop="32dp"
         android:text="Modify Info"
         app:layout_constraintStart_toEndOf="@+id/logOutButton"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -47,27 +47,6 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="User List"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usrEmail" />
-
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="552dp"
-        android:layout_height="698dp"
-        android:background="#BC636363"
-        android:verticalScrollbarPosition="right"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,11 +61,11 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
         android:text="Current State"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch1" />
+        app:layout_constraintTop_toBottomOf="@+id/modifyInfoButton" />
 
     <TextView
         android:id="@+id/usrEmail"
@@ -108,15 +87,32 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
+    <Button
+        android:id="@+id/userListButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lista Usuarios"
+        tools:layout_editor_absoluteX="133dp"
+        tools:layout_editor_absoluteY="152dp" />
+
     <Switch
         android:id="@+id/switch1"
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="28dp"
-        android:text="State"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.76"
-        app:layout_constraintStart_toEndOf="@+id/modifyInfoButton"
+        android:layout_marginEnd="56dp"
+        android:text="Estado"
+        app:layout_constraintEnd_toStartOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="411dp"
+        android:layout_height="499dp"
+        android:layout_marginTop="104dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/modifyInfoButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

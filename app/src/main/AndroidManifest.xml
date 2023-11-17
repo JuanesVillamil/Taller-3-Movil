@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <uses-feature android:name="android.hardware.camera"
-        android:required="false"/>
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:allowBackup="true"
@@ -21,7 +23,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Taller3_Firebase"
         tools:targetApi="31">
-
+        <activity
+            android:name=".MostrarUsuarios"
+            android:exported="false" />
+        <activity
+            android:name=".FollowUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserListActivity"
+            android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -38,7 +48,7 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".MapActivity"
             android:exported="false"
             android:label="@string/title_activity_maps" />
         <activity
@@ -50,15 +60,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".SignInActivity"
-            android:exported="false"/>
-        <activity android:name=".MenuActivity"
-            android:exported="false"/>
-        <activity android:name=".ImageUpload"
-            android:exported="false"/>
-        <activity android:name=".ModifyInfo"
-            android:exported="false"/>
+        <activity
+            android:name=".SignInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ImageUpload"
+            android:exported="false" />
+        <activity
+            android:name=".ModifyInfo"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -69,7 +82,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>

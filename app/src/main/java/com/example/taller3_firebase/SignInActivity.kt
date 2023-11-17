@@ -10,35 +10,38 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.taller3_firebase.databinding.SignInActivityBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.math.log
 
 class SignInActivity : AppCompatActivity() {
 
     private lateinit var binding: SignInActivityBinding
     private var auth: FirebaseAuth = Firebase.auth
-
+    private lateinit var firestore: FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = SignInActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        auth = FirebaseAuth.getInstance()
 
-        binding.createButton.setOnClickListener{
-            if (validateCreationForm()){
+        firestore = FirebaseFirestore.getInstance()
+
+        binding.createButton.setOnClickListener {
+            if (validateCreationForm()) {
                 signUpAndSaveUserInfo()
-                saveAdditionUserInfo()
-
-                val intent = Intent(baseContext, ImageUpload::class.java)
-                startActivity(intent)
             } else {
-                Toast.makeText(this@SignInActivity, String.format("Form is not valid. Try again."), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@SignInActivity,
+                    "Form is not valid. Try again.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
-
-
     }
 
     fun validateCreationForm():Boolean{
@@ -77,12 +80,11 @@ class SignInActivity : AppCompatActivity() {
     fun validateEmail(email: String): Boolean{
         var validEmail: Boolean = true
 
-        // First check if its empty.
         if (TextUtils.isEmpty(email)){
             binding.editTextTextEmailAddress2.error = "Required"
             validEmail = false
             Log.d("email", email)
-        } else { // Then check if its a valid pattern.
+        } else {
 
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
                 binding.editTextTextEmailAddress2.error = "Invalid"
@@ -165,15 +167,13 @@ class SignInActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
-
                     Toast.makeText(
                         this@SignInActivity,
                         "User ${user?.email} was successfully created.",
                         Toast.LENGTH_LONG
                     ).show()
 
-                    // Now that the user is created, save additional user info
-
+                    saveAdditionalUserInfo(user)
                 }
             }
             .addOnFailureListener(this) { e ->
@@ -181,20 +181,31 @@ class SignInActivity : AppCompatActivity() {
             }
     }
 
-    fun saveAdditionUserInfo(){
+    fun saveAdditionalUserInfo(user: FirebaseUser?) {
+        user?.let {
+            val userId = it.uid
+            val userDocument = hashMapOf(
+                "email" to binding.editTextTextEmailAddress2.text.toString(),
+                "firstName" to binding.editTextFirstName.text.toString(),
+                "lastName" to binding.editTextLastName.text.toString(),
+                "id" to binding.editTextID.text.toString(),
+                "latitude" to binding.editTextNumberDecimalLatitude.text.toString(),
+                "longitude" to binding.editTextNumberDecimalLongitude.text.toString(),
+                "state" to "No disponible"
+            )
 
-        val database = Firebase.database
-        val userDefinedId = (binding.editTextID.text.toString())
-        val reference: DatabaseReference = database.getReference("users/$userDefinedId")
-        reference.child("email").setValue(binding.editTextTextEmailAddress2.text.toString())
-        reference.child("firstName").setValue(binding.editTextFirstName.text.toString())
-        reference.child("firstName").setValue(binding.editTextFirstName.text.toString())
-        reference.child("lastName").setValue(binding.editTextLastName.text.toString())
-        reference.child("id").setValue(binding.editTextID.text.toString())
-        reference.child("latitude").setValue(binding.editTextNumberDecimalLatitude.text.toString())
-        reference.child("longitude").setValue(binding.editTextNumberDecimalLongitude.text.toString())
-        reference.child("state").setValue("No disponible")
-
+            firestore.collection("usuarios")
+                .document(userId)
+                .set(userDocument)
+                .addOnSuccessListener {
+                    Log.d("Firestore", "Document successfully written!")
+                    val intent = Intent(baseContext, ImageUpload::class.java)
+                    startActivity(intent)
+                }
+                .addOnFailureListener { e ->
+                    Log.w("Firestore", "Error writing document", e)
+                }
+        }
     }
 
 }

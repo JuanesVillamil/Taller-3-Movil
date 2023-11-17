@@ -44,7 +44,6 @@ class ModifyInfo : AppCompatActivity() {
         }
 
         if (currentUser != null) {
-            // Step 1: Search for the user with the same email in the database
             databaseReference.orderByChild("email").equalTo(currentUser.email)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {

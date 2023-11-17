@@ -6,6 +6,12 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.example.taller3_firebase.databinding.ActivityMainBinding
 import com.example.taller3_firebase.databinding.MenuActivityBinding
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -14,15 +20,21 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
+import org.json.JSONObject
+import android.widget.Toast
+import com.google.firebase.firestore.DocumentChange
 
-class MenuActivity : AppCompatActivity() {
+class MenuActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var databaseReference: DatabaseReference
     private lateinit var binding: MenuActivityBinding
     lateinit var usuario: User
     private var users = emptyArray<User>()
-
+    private lateinit var googleMap: GoogleMap
+    private val firestore = FirebaseFirestore.getInstance()
+    private val currentUser = FirebaseAuth.getInstance().currentUser
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +42,8 @@ class MenuActivity : AppCompatActivity() {
         binding = MenuActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+        mapFragment.getMapAsync(this)
 
         auth = FirebaseAuth.getInstance()
         databaseReference = FirebaseDatabase.getInstance().getReference("users")
@@ -39,10 +53,11 @@ class MenuActivity : AppCompatActivity() {
             binding.usrEmail.setText(currentUser.email)
         }
 
-        binding.logOutButton.setOnClickListener{
+        binding.logOutButton.setOnClickListener {
             auth.signOut()
             val intent = Intent(baseContext, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         binding.modifyInfoButton.setOnClickListener {
@@ -50,94 +65,106 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        if (currentUser != null) {
-            // Step 1: Search for the user with the same email in the database
-            databaseReference.orderByChild("email").equalTo(currentUser.email)
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        for (userSnapshot in snapshot.children) {
-                            val userState = userSnapshot.child("state").getValue(String::class.java)
-
-                            // Step 2: Set the state of the switch based on the retrieved user state
-                            binding.switch1.isChecked = userState == "Disponible"
-                            binding.usrState.text = userState
-
-                            // Handle switch state change
-                            binding.switch1.setOnCheckedChangeListener { _, isChecked ->
-                                // Update the "state" property in the Realtime Database based on switch state
-                                val newState = if (isChecked) "Disponible" else "No Disponible"
-                                userSnapshot.child("state").ref.setValue(newState)
-                            }
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        // Handle error
-                    }
-                })
-
-            // Step 3: Search for users whose state is "Disponible"
-            val availableUsers = ArrayList<User>()
-
-            databaseReference.orderByChild("state").equalTo("Disponible")
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        for (userSnapshot in snapshot.children) {
-                            val userEmail = userSnapshot.child("email").getValue(String::class.java)
-                            val userFirstName = userSnapshot.child("firstName").getValue(String::class.java)
-                            val userLastName = userSnapshot.child("lastName").getValue(String::class.java)
-                            val userIdNumberStr = userSnapshot.child("idNumber").getValue(String::class.java)
-                            val userLatitudeStr = userSnapshot.child("latitude").getValue(String::class.java)
-                            val userLongitudeStr = userSnapshot.child("longitude").getValue(String::class.java)
-                            val userStatus = userSnapshot.child("status").getValue(String::class.java)
-
-                            // Parse to numbers
-                            val userIdNumber = userIdNumberStr?.toBigIntegerOrNull() ?: 0
-                            val userLatitude = userLatitudeStr?.toDoubleOrNull() ?: 0.0
-                            val userLongitude = userLongitudeStr?.toDoubleOrNull() ?: 0.0
-
-                            val user = User(
-                                userEmail?: "",
-                                userFirstName ?: "",
-                                userLastName ?: "",
-                                userIdNumber ?: 0,
-                                userLatitude ?: 0.0,
-                                userLongitude ?: 0.0,
-                                userStatus ?: ""
-                            )
-                            availableUsers.add(user)
-                        }
-
-
-                        //Aqui user debería ser igual a un arreglo que retorna la conuslta a la base de datos
-
-                        val users = availableUsers
-                        val adapter = UserAdapter(baseContext, availableUsers)
-                        binding.listView.adapter = adapter
-                        binding.listView.setOnItemClickListener { parent, view, position, id ->
-                            val selectedItem = parent.getItemAtPosition(position) as User
-                            val latitud = selectedItem.latitude
-                            val longitud = selectedItem.longitude
-                            val intent = Intent(baseContext, MapsActivity::class.java )
-
-                            intent.putExtra("latitud", latitud)
-                            intent.putExtra("longitud", longitud)
-
-                            startActivity(intent)
-
-                        }
-
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
-                    }
-
-                })
+        binding.userListButton.setOnClickListener {
+            val intent = Intent(this, UserListActivity::class.java)
+            startActivity(intent)
         }
 
+        binding.switch1.setOnCheckedChangeListener { _, isChecked ->
+            val newState = if (isChecked) "Disponible" else "No Disponible"
 
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            val userId = currentUser?.uid
 
+            if (userId != null) {
+                val userRef = FirebaseFirestore.getInstance().collection("usuarios").document(userId)
+                userRef.update("state", newState)
+                    .addOnSuccessListener {
+                    }
+                    .addOnFailureListener {
+                    }
+            }
+        }
+        if (currentUser != null) {
+            binding.usrEmail.text = currentUser.email
+
+            val userDocument = firestore.collection("usuarios").document(currentUser.email!!)
+
+            userDocument.get().addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val userState = documentSnapshot.getString("state")
+
+                    binding.switch1.isChecked = userState == "Disponible"
+                    binding.usrState.text = userState
+
+                    binding.switch1.setOnCheckedChangeListener { _, isChecked ->
+                        val newState = if (isChecked) "Disponible" else "No Disponible"
+                        userDocument.update("state", newState)
+                            .addOnSuccessListener {
+                            }
+                            .addOnFailureListener {
+                            }
+                    }
+                }
+            }.addOnFailureListener {
+            }
+
+            val availableUsers = ArrayList<User>()
+
+            firestore.collection("usuarios")
+                .whereEqualTo("state", "Disponible")
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        // Manejar el error
+                        return@addSnapshotListener
+                    }
+
+                    for (doc in snapshot!!.documents) {
+                        val userEmail = doc.getString("email")
+                         Toast.makeText(this, "Usuario conectado: $userEmail", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }
     }
+
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+
+        val puntosDeInteres = leerPuntosDeInteresDesdeJSON()
+        agregarMarcadoresDeInteres(puntosDeInteres)
+
+        val ubicacionUsuario = LatLng(4.6, -74.090749)
+        googleMap.addMarker(MarkerOptions().position(ubicacionUsuario).title("Mi ubicación"))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ubicacionUsuario, 10f))
+    }
+
+    private fun leerPuntosDeInteresDesdeJSON(): List<Pair<LatLng, String>> {
+        val puntosDeInteres = mutableListOf<Pair<LatLng, String>>()
+
+        val inputStream = resources.openRawResource(R.raw.locations)
+        val jsonText = inputStream.bufferedReader().use { it.readText() }
+
+        val jsonObject = JSONObject(jsonText)
+        val locationsArray = jsonObject.getJSONArray("locationsArray")
+
+        for (i in 0 until locationsArray.length()) {
+            val locationObject = locationsArray.getJSONObject(i)
+            val latitude = locationObject.getDouble("latitude")
+            val longitude = locationObject.getDouble("longitude")
+            val nombre = locationObject.getString("name")
+
+            puntosDeInteres.add(Pair(LatLng(latitude, longitude), nombre))
+        }
+
+        return puntosDeInteres
+    }
+
+    private fun agregarMarcadoresDeInteres(puntosDeInteres: List<Pair<LatLng, String>>) {
+        for ((puntoDeInteres, nombre) in puntosDeInteres) {
+            googleMap.addMarker(MarkerOptions().position(puntoDeInteres).title(nombre))
+        }
+    }
+
+
 
 }

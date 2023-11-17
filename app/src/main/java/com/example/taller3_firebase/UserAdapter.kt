@@ -22,7 +22,6 @@ class UserAdapter(context: Context, users: List<User>) : ArrayAdapter<User>(cont
         val text1View = itemView!!.findViewById<TextView>(android.R.id.text1)
         val text2View = itemView.findViewById<TextView>(android.R.id.text2)
 
-        // Set layout gravity to center
         text1View.gravity = Gravity.CENTER
         text2View.gravity = Gravity.CENTER
 

@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Initialize firebase auth
         auth = Firebase.auth
 
         binding.loginButton.setOnClickListener{
@@ -39,37 +38,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Add event listener to sign up button
         binding.signupButton.setOnClickListener{
             val intent = Intent(baseContext, SignInActivity::class.java)
             startActivity(intent)
         }
 
-        binding.mapa.setOnClickListener {
-            val intent = Intent(applicationContext, MapsActivity::class.java)
-            startActivity(intent)
-        }
-        binding.prueba.setOnClickListener {
-            val intent = Intent(applicationContext, MenuActivity::class.java)
-            startActivity(intent)
-        }
     }
 
 
     override fun onStart() {
         super.onStart()
 
-        // Check if there is a user currenty logged in.
         val currentUser = auth.currentUser
 
-        // If there is, launch the menu activity.
         if (currentUser != null) {
             val intent = Intent(baseContext, MenuActivity::class.java)
             intent.putExtra("currentUser", currentUser.email)
             startActivity(intent)
         }
 
-        // If not, stay on the login activity.
         binding.editTextTextEmailAddress.setText("")
         binding.editTextTextPassword.setText("")
 
@@ -83,7 +70,6 @@ class MainActivity : AppCompatActivity() {
                         val intent = Intent(baseContext, MenuActivity::class.java)
                         startActivity(intent)
                     } else {
-                        // If sign in fails, display a message to the user.
                         Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT)
                             .show()
                     }
@@ -119,11 +105,10 @@ class MainActivity : AppCompatActivity() {
     fun validateEmail(email: String): Boolean{
         var validEmail: Boolean = true
 
-        // First check if its empty.
         if (TextUtils.isEmpty(email)){
             binding.editTextTextEmailAddress.error = "Required"
             validEmail = false
-        } else { // Then check if its a valid pattern.
+        } else {
 
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
                 binding.editTextTextEmailAddress.error = "Invalid"
