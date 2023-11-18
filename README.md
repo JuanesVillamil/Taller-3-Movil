@@ -9,4 +9,4 @@
 #### MovilMinds
 
 ## Enlace al video (YouTube)
-#### https://youtu.be/YNlwZx2iJzU
+#### https://www.youtube.com/watch?v=YNlwZx2iJzU
